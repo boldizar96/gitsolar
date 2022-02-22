@@ -1,0 +1,161 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Solar Sensors Home</h1>
+  <p>This is the home page of the Solar Sensors project!</p>
+  <h2>Dynamic content</h2>
+  <p>Some generic data:</p>
+  <ul>
+    <li><strong>Sensor types:</strong> {{ num_sensors }}</li>
+    <li><strong>Number of sensors:</strong> {{ num_instances }}</li>
+  </ul>
+  <p>{{ wattage }}</p>
+  <p>Last measured data of {{ place1 }}:</p>
+  <ul>
+    <li>{{ temp1_last_measurement }}</li>
+    <li>{{ temp2_last_measurement }}</li>
+    <li>{{ hum_last_measurement }}</li>
+    <li>{{ press_last_measurement }}</li>
+  </ul>
+
+  <div id="graphdiv"></div>
+
+  <div id="container" style="width:100%;height:100%;">
+    <canvas id="power-chart" data-url="{% url 'power-chart' %}"></canvas>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
+  <script>
+
+    $(function () {
+
+      var $powerChart = $("#power-chart");
+      $.ajax({
+        url: $powerChart.data("url"),
+        success: function (data) {
+
+          var ctx = $powerChart[0].getContext("2d");
+
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: data.labels,
+              datasets: [
+                {
+                label: 'Watt',
+                fill: true,
+                data: data.data,
+                yAxisID: 'y',
+                backgroundColor: [
+                  'rgb(51, 102, 255)',
+                ],
+                borderColor: 'rgb(0, 0, 255)',
+                },
+                {
+                  label: 'Temp1',
+                  fill: false,
+                  data: data.data2,
+                  yAxisID: 'y1',
+                  borderColor: 'rgb(255, 0, 0)',
+                },
+                {
+                  label: 'Temp2',
+                  fill: false,
+                  data: data.data3,
+                  yAxisID: 'y1',
+                  borderColor: 'rgb(255, 153, 0)',
+                },
+                {
+                  label: 'Humidity',
+                  fill: false,
+                  data: data.data4,
+                  yAxisID: 'y2',
+                  borderColor: 'rgb(0, 0, 102)',
+                },
+                {
+                  label: 'Pressure',
+                  fill: false,
+                  data: data.data5,
+                  yAxisID: 'y3',
+                  borderColor: 'rgb(204, 0, 153)',
+                },
+              ]          
+            },
+            options: {
+              elements: {
+                  point: {
+                      radius: 0 // default to disabled in all datasets
+                  }
+              },
+              spanGaps: true,
+              responsive: true,
+              maintainAspectRatio: true,
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Chart.js Line Chart'
+                }
+              },
+              scales: {
+                  xAxes: [{
+                      ticks: {
+                          autoSkip: false,
+                          maxRotation: 90,
+                          minRotation: 90
+                      }
+                  }],
+                  yAxes: [
+                    {
+                      id: 'y',
+                      type: 'linear',
+                      display: true,
+                      position: 'left',
+                    },
+                    {
+                      id: 'y1',
+                      type: 'linear',
+                      display: true,
+                      position: 'right',
+
+                      // grid line settings
+                      grid: {
+                        drawOnChartArea: false, // only want the grid lines for one axis to show up
+                      },
+                    },
+                    {
+                      id: 'y2',
+                      type: 'linear',
+                      display: true,
+                      position: 'right',
+
+                      // grid line settings
+                      grid: {
+                        drawOnChartArea: false, // only want the grid lines for one axis to show up
+                      },
+                    },
+                    {
+                      id: 'y3',
+                      type: 'linear',
+                      display: true,
+                      position: 'right',
+
+                      // grid line settings
+                      grid: {
+                        drawOnChartArea: false, // only want the grid lines for one axis to show up
+                      },
+                    },
+                  ]
+                  
+              },
+            },
+          });
+        }
+      });
+    });
+
+  </script>
+
+  </br>
+{% endblock %}
